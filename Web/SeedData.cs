@@ -23,7 +23,20 @@ public static class SeedData
                 incorrectAnswers: new List<string>() {"2", "3", "6"})));
 
             quizRepo.Add(new Quiz(id: 1, items: quizItems, title: "Matematyka"));
-            
+
+            quizItems = new List<QuizItem>();
+
+            quizItems.Add(quizItemRepo.Add(new QuizItem(id: 1, correctAnswer: "5", question: "3 + 2",
+                incorrectAnswers: new List<string>() { "2", "3", "4" })));
+
+            quizItems.Add(quizItemRepo.Add(new QuizItem(id: 2, correctAnswer: "6", question: "3 * 2",
+                incorrectAnswers: new List<string>() { "2", "3", "7" })));
+
+            quizItems.Add(quizItemRepo.Add(new QuizItem(id: 3, correctAnswer: "1", question: "3 - 2",
+                incorrectAnswers: new List<string>() { "2", "3", "6" })));
+
+            quizRepo.Add(new Quiz(id: 2, items: quizItems, title: "Matematyka"));
+
         }
     }
 }

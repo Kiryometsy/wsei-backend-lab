@@ -1,0 +1,17 @@
+﻿@page
+@model BackendLab01.Pages.Quiz.Choose
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<ol>
+    @foreach (var item in @Model.lista)
+    {
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="" asp-page="/Quiz/Item" asp-route-itemId="1" asp-route-quizId="@item.Id">Quiz</a>
+        </li>
+    }
+</ol>

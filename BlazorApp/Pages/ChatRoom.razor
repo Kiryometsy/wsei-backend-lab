@@ -45,6 +45,8 @@
             // remove old messages if any
             _messages.Clear();
 
+            _to = "All";
+
             // Create the chat client
             string baseUrl = navigationManager.BaseUri;
 
@@ -83,7 +85,8 @@
 
     private void PrivateMessage(string name, string message)
     {
-        _messages.Add(new Message(name, $"[Private]: {message}", false));
+        bool isMine = name.Equals(_username, StringComparison.OrdinalIgnoreCase);
+        _messages.Add(new Message(name, $"[Private]: {message}", isMine));
         InvokeAsync(StateHasChanged);
     }
 
@@ -108,37 +111,20 @@
     {
         if (_isChatting && !string.IsNullOrWhiteSpace(message))
         {
+
             if (_to == "All")
             {
                 await _hubConnection.SendAsync("Broadcast", _username, message);
             }
             else
             {
-                // Pobierz connectionId użytkownika o nazwie w polu _to
-                string connectionId = userService.GetConnectionIdByName(_to);
-                if (connectionId != null)
-                {
-                    await _hubConnection.SendAsync("Private", _username, connectionId, message);
-                }
-                else
-                {
-                    // Obsłuż brak connectionId dla użytkownika o nazwie _to
-                    // (możesz wyświetlić komunikat lub podjąć inną akcję)
-                    _message = $"User '{_to}' is not available to receive private messages.";
-                    InvokeAsync(StateHasChanged);
-                }
+                await _hubConnection.SendAsync("Private", _username, userService.GetConnectionIdByName(_username), message);
+                await _hubConnection.SendAsync("Private", _username, userService.GetConnectionIdByName(_to), message);
             }
 
-            _newMessage = string.Empty; // Wyczyść pole _newMessage
-        }
-        else
-        {
-            // Obsłuż puste lub niepoprawne wiadomości
-            _message = "Please enter a valid message.";
-            InvokeAsync(StateHasChanged);
+            _newMessage = string.Empty;
         }
     }
-
 
     private class Message
     {
@@ -201,7 +187,7 @@ else
         <textarea class="input-lg" placeholder="enter your comment" @bind="@_newMessage"></textarea>
         <button class="btn btn-default" @onclick="@(() => SendAsync(_newMessage))">Send</button>
         <select class="form-select" @bind="@_to">
-            <option value="All">All</option>
+            <option value="All" selected>All</option>
             @foreach (var user in userService.GetAll())
             {
                 if (user.Username != _username) // Sprawdź, czy to nie jest bieżący użytkownik
